@@ -24,6 +24,16 @@ export async function POST(request: NextRequest) {
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object;
+      
+      // Verificar se metadata e userId existem
+      if (!session.metadata || !session.metadata.userId) {
+        console.error('Metadados de usuário ausentes na sessão do Stripe');
+        return NextResponse.json(
+          { error: 'Metadados de usuário ausentes' },
+          { status: 400 }
+        );
+      }
+      
       const userId = session.metadata.userId;
 
       // Buscar usuário no banco de dados
