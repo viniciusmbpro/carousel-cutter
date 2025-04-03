@@ -5,12 +5,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 export async function GET(request: NextRequest) {
   try {
-    const url = new URL(request.url);
-    const userId = url.searchParams.get('userId');
-    
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+
     if (!userId) {
       return NextResponse.json(
-        { error: 'ID do usuário é obrigatório' },
+        { error: 'ID do usuário não fornecido' },
         { status: 400 }
       );
     }
@@ -22,22 +22,18 @@ export async function GET(request: NextRequest) {
       where('userId', '==', userId),
       orderBy('createdAt', 'desc')
     );
-    
+
     const querySnapshot = await getDocs(q);
-    const carousels: any[] = [];
-    
-    querySnapshot.forEach((doc) => {
-      carousels.push({
-        id: doc.id,
-        ...doc.data()
-      });
-    });
-    
+    const carousels = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
     return NextResponse.json(carousels);
   } catch (error) {
     console.error('Erro ao buscar carrosséis:', error);
     return NextResponse.json(
-      { error: 'Erro ao buscar carrosséis' },
+      { error: 'Falha ao buscar carrosséis' },
       { status: 500 }
     );
   }
@@ -46,45 +42,40 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, description, slides, userId, status } = body;
-    
-    // Validar dados obrigatórios
+    const { title, description, slides, userId } = body;
+
     if (!title || !slides || !userId) {
       return NextResponse.json(
-        { error: 'Dados incompletos' },
+        { error: 'Título, slides e ID do usuário são obrigatórios' },
         { status: 400 }
       );
     }
-    
-    // Validar se usuário tem limite disponível
-    // Em um ambiente de produção, verificaríamos o plano do usuário
-    // e quantos carrosséis ele já criou no mês
-    
-    // Preparar dados para salvar
-    const now = new Date().toISOString();
+
+    // Criar novo carrossel
     const carousel = {
       id: uuidv4(),
       userId,
       title,
       description: description || '',
       slides,
-      createdAt: now,
-      updatedAt: now,
-      status: status || 'draft',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      isPublished: false
     };
-    
+
     // Salvar no Firestore
-    const docRef = await addDoc(collection(db, 'carousels'), carousel);
-    
-    // Retornar dados salvos com ID
+    const carouselsRef = collection(db, 'carousels');
+    const docRef = await addDoc(carouselsRef, carousel);
+
+    // Retornar dados salvos
     return NextResponse.json({
-      id: docRef.id,
-      ...carousel
+      ...carousel,
+      id: docRef.id
     });
   } catch (error) {
     console.error('Erro ao criar carrossel:', error);
     return NextResponse.json(
-      { error: 'Erro ao criar carrossel' },
+      { error: 'Falha ao criar carrossel' },
       { status: 500 }
     );
   }
