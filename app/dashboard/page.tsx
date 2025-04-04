@@ -55,10 +55,51 @@ export default function DashboardPage() {
           </p>
         </div>
         
-        <div className="mt-4 md:mt-0">
-          <Link href="/dashboard/create">
-            <Button variant="primary">Criar novo carrossel</Button>
+        <div className="mt-4 md:mt-0 space-x-3">
+          <Link href="/dashboard/editor">
+            <Button variant="outline">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Editor de Imagens
+            </Button>
           </Link>
+          
+          <Link href="/dashboard/create">
+            <Button variant="primary">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Criar com IA
+            </Button>
+          </Link>
+        </div>
+      </div>
+      
+      {/* Nova funcionalidade */}
+      <div className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border border-green-200 dark:border-green-800 rounded-lg p-5">
+        <div className="flex flex-col md:flex-row md:items-center">
+          <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-4">
+            <div className="p-2 bg-green-100 dark:bg-green-800 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600 dark:text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">NOVA Funcionalidade: Editor de Imagens para Instagram</h3>
+            <p className="mt-2 text-gray-700 dark:text-gray-300">
+              Agora você pode fazer upload de suas próprias imagens, cortá-las nos tamanhos perfeitos para Instagram e criar carrosséis profissionais. 
+              Escolha entre diversos formatos como quadrado (1:1), retrato (4:5), paisagem (16:9) e stories (9:16).
+            </p>
+            <div className="mt-4">
+              <Link href="/dashboard/editor">
+                <Button variant="success" className="w-full md:w-auto">
+                  Experimentar Agora
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -142,9 +183,24 @@ export default function DashboardPage() {
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               Comece agora a criar carrosséis incríveis para suas redes sociais
             </p>
-            <Link href="/dashboard/create">
-              <Button variant="primary">Criar primeiro carrossel</Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link href="/dashboard/editor">
+                <Button variant="outline">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Criar com Imagens
+                </Button>
+              </Link>
+              <Link href="/dashboard/create">
+                <Button variant="primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  Criar com IA
+                </Button>
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -157,6 +213,9 @@ export default function DashboardPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
                   {carousel.description || 'Sem descrição'}
                 </p>
+                <div className="text-xs mb-3 inline-block px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                  {carousel.type === 'image-carousel' ? 'Carrossel de Imagens' : 'Carrossel de IA'}
+                </div>
                 
                 <div className="flex justify-between items-center">
                   <div className="text-xs text-gray-500 dark:text-gray-400">

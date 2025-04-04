@@ -29,6 +29,7 @@ export default function CarouselEditPage({ params }: PageProps) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isDownloading, setIsDownloading] = useState(false);
   
   useEffect(() => {
     async function fetchCarousel() {
@@ -131,6 +132,32 @@ export default function CarouselEditPage({ params }: PageProps) {
     setSlides(reorderedSlides);
   };
   
+  // Função para baixar o carrossel
+  const handleDownloadCarousel = async () => {
+    if (!id) return;
+    
+    setIsDownloading(true);
+    
+    try {
+      // Verificar se o carrossel é do tipo image-carousel
+      const isImageCarousel = carousel?.type === 'image-carousel';
+      
+      if (isImageCarousel) {
+        // Para carrosséis de imagem, use nossa API específica
+        window.location.href = `/api/carousels/${id}/download`;
+      } else {
+        // Para carrosséis de texto, podemos gerar um PDF ou outro formato
+        // Por enquanto, apenas disponibilizamos para carrosséis de imagem
+        setError('Download disponível apenas para carrosséis de imagem.');
+      }
+    } catch (error) {
+      console.error('Erro ao baixar carrossel:', error);
+      setError('Não foi possível baixar o carrossel. Por favor, tente novamente.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+  
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -167,6 +194,20 @@ export default function CarouselEditPage({ params }: PageProps) {
         </div>
         
         <div className="flex items-center space-x-4">
+          {carousel.type === 'image-carousel' && (
+            <Button
+              variant="success"
+              onClick={handleDownloadCarousel}
+              isLoading={isDownloading}
+              className="flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Baixar para Instagram
+            </Button>
+          )}
+          
           {isPublished && (
             <Link 
               href={`/carousels/${id}`} 
@@ -239,6 +280,19 @@ export default function CarouselEditPage({ params }: PageProps) {
               Publicar carrossel (disponível publicamente)
             </label>
           </div>
+
+          {carousel.type === 'image-carousel' && (
+            <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300">
+              <p className="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>
+                  Este é um carrossel de imagens otimizado para o Instagram. Você pode baixar todas as imagens no formato correto clicando no botão "Baixar para Instagram".
+                </span>
+              </p>
+            </div>
+          )}
           
           {isPublished && (
             <div className="p-4 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
@@ -249,9 +303,13 @@ export default function CarouselEditPage({ params }: PageProps) {
                 <span>
                   Seu carrossel está publicado e pode ser acessado por qualquer pessoa com o link:
                   <br />
-                  <code className="mt-1 block bg-blue-50 dark:bg-blue-800/30 p-2 rounded text-xs">
-                    {typeof window !== 'undefined' ? `${window.location.origin}/carousels/${id}` : ''}
-                  </code>
+                  <a 
+                    href={`${window.location.origin}/carousels/${id}`}
+                    target="_blank"
+                    className="text-blue-600 dark:text-blue-400 hover:underline break-all"
+                  >
+                    {`${window.location.origin}/carousels/${id}`}
+                  </a>
                 </span>
               </p>
             </div>
@@ -259,59 +317,64 @@ export default function CarouselEditPage({ params }: PageProps) {
         </div>
       </div>
       
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Slides ({slides.length})</h2>
-        <Button onClick={handleAddSlide} variant="outline">
-          Adicionar slide
-        </Button>
+      <div className="mb-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Slides do carrossel</h2>
       </div>
       
-      <div className="space-y-4 mb-8">
-        {slides.length === 0 ? (
-          <div className="text-center p-8 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Este carrossel não possui slides. Adicione algum conteúdo para começar.
-            </p>
-            <Button onClick={handleAddSlide} variant="primary">
-              Adicionar primeiro slide
-            </Button>
-          </div>
-        ) : (
-          slides
-            .sort((a, b) => a.order - b.order)
-            .map((slide) => (
-              <div key={slide.id} className="card border border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center">
-                    <div className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium mr-2">
-                      {slide.order}
-                    </div>
-                    <h3 className="font-medium text-gray-900 dark:text-white">Slide {slide.order}</h3>
-                  </div>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemoveSlide(slide.id)}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                  </Button>
+      <div className="space-y-4 mb-6">
+        {slides.map((slide) => (
+          <div key={slide.id} className="card border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+                <div className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium mr-2">
+                  {slide.order}
                 </div>
-                
-                <textarea
-                  value={slide.text}
-                  onChange={(e) => handleSlideChange(slide.id, e.target.value)}
-                  className="input w-full h-32 resize-none"
-                  placeholder={`Digite o conteúdo do slide ${slide.order}...`}
+                <h3 className="font-medium text-gray-900 dark:text-white">Slide {slide.order}</h3>
+              </div>
+              
+              <button
+                onClick={() => handleRemoveSlide(slide.id)}
+                className="text-red-500 hover:text-red-700"
+                aria-label="Remover slide"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+            
+            {carousel.type === 'image-carousel' && slide.imageUrl && (
+              <div className="mb-4 relative w-full h-40 bg-gray-100 dark:bg-gray-800 rounded overflow-hidden">
+                <img
+                  src={slide.imageUrl}
+                  alt={`Slide ${slide.order}`}
+                  className="w-full h-full object-contain"
                 />
               </div>
-            ))
-        )}
+            )}
+            
+            <textarea
+              value={slide.text || ''}
+              onChange={(e) => handleSlideChange(slide.id, e.target.value)}
+              className="input w-full h-32 resize-none"
+              placeholder={`Conteúdo do slide ${slide.order}...`}
+            />
+          </div>
+        ))}
       </div>
       
-      <div className="flex justify-end">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between mb-8">
+        <Button
+          variant="outline"
+          onClick={handleAddSlide}
+          className="flex items-center justify-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+          </svg>
+          Adicionar slide
+        </Button>
+        
         <Button
           variant="primary"
           onClick={handleSave}
