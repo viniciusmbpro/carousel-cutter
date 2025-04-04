@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/app/lib/context/AuthContext';
@@ -12,9 +12,17 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
   
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const router = useRouter();
+
+  // Redirecionar após login bem-sucedido
+  useEffect(() => {
+    if (user && loginSuccess) {
+      router.push('/dashboard');
+    }
+  }, [user, loginSuccess, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +31,7 @@ export default function LoginForm() {
 
     try {
       await login(email, password);
-      router.push('/dashboard');
+      setLoginSuccess(true);
     } catch (err: any) {
       let errorMessage = 'Falha ao fazer login. Tente novamente.';
       
