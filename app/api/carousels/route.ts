@@ -15,12 +15,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Buscar carrosséis do usuário
+    // Buscar carrosséis do usuário - sem orderBy para evitar erro de índice
     const carouselsRef = collection(db, 'carousels');
+    
+    // Remover temporariamente o orderBy para funcionar sem índice
     const q = query(
       carouselsRef,
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', userId)
+      // orderBy removido temporariamente
     );
 
     const querySnapshot = await getDocs(q);
@@ -28,6 +30,12 @@ export async function GET(request: NextRequest) {
       id: doc.id,
       ...doc.data()
     }));
+
+    // Ordenar no cliente
+    carousels.sort((a: any, b: any) => {
+      // Ordenar por data decrescente (mais recente primeiro)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
 
     return NextResponse.json(carousels);
   } catch (error) {
@@ -51,6 +59,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Verificar quantos carrosséis o usuário já criou (limite do plano gratuito)
+    const carouselsRef = collection(db, 'carousels');
+    const q = query(carouselsRef, where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+    
+    // No plano gratuito, o usuário pode criar até 3 carrosséis
+    if (snapshot.size >= 3) {
+      return NextResponse.json(
+        { 
+          error: 'Limite de carrosséis do plano gratuito atingido', 
+          message: 'Você atingiu o limite de 3 carrosséis do plano gratuito. Considere fazer upgrade para um plano premium.'
+        },
+        { status: 403 }
+      );
+    }
+
     // Criar novo carrossel
     const carousel = {
       id: uuidv4(),
@@ -64,7 +88,6 @@ export async function POST(request: NextRequest) {
     };
 
     // Salvar no Firestore
-    const carouselsRef = collection(db, 'carousels');
     const docRef = await addDoc(carouselsRef, carousel);
 
     // Retornar dados salvos

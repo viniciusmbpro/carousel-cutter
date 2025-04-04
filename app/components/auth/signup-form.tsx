@@ -37,7 +37,7 @@ export default function SignupForm() {
 
     try {
       await signup(email, password, name);
-      router.push('/pricing'); // Após signup, redireciona para a escolha de plano
+      router.push('/dashboard'); // Redireciona diretamente para o dashboard - plano grátis
     } catch (err: any) {
       let errorMessage = 'Falha ao criar conta. Tente novamente.';
       

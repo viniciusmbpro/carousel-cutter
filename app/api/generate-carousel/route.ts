@@ -2,30 +2,30 @@ import { NextRequest, NextResponse } from 'next/server';
 
 interface GenerateCarouselRequest {
   topic: string;
-  target: string;
-  tone: string;
-  slideCount: number;
+  target?: string;
+  tone?: string;
+  slideCount?: number;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: GenerateCarouselRequest = await request.json();
-    const { topic, target, tone, slideCount } = body;
+    const { 
+      topic, 
+      target = 'Instagram', 
+      tone = 'informativo', 
+      slideCount = 5 
+    } = body;
     
     // Validar dados de entrada
-    if (!topic || !target || !tone || !slideCount) {
+    if (!topic) {
       return NextResponse.json(
-        { error: 'Parâmetros incompletos' },
+        { error: 'Tópico é obrigatório' },
         { status: 400 }
       );
     }
     
-    if (slideCount < 1 || slideCount > 10) {
-      return NextResponse.json(
-        { error: 'Número de slides deve estar entre 1 e 10' },
-        { status: 400 }
-      );
-    }
+    const count = Math.min(Math.max(slideCount, 3), 10); // Entre 3 e 10 slides
     
     // Em um ambiente de produção, aqui chamaríamos um modelo de IA como OpenAI
     // Para esta demonstração, vamos gerar conteúdo mock
@@ -33,11 +33,12 @@ export async function POST(request: NextRequest) {
     const title = `${getTopicTitle(topic)} para ${target}`;
     
     // Gerar slides com conteúdo fictício baseado no tópico, rede e tom
-    const slides = generateMockSlides(topic, target, tone, slideCount);
+    const slides = generateMockSlides(topic, target, tone, count);
     
     return NextResponse.json({
       title,
       slides,
+      description: `Um carrossel sobre ${topic} com ${count} slides em tom ${tone}`,
     });
   } catch (error) {
     console.error('Erro ao gerar carrossel:', error);
