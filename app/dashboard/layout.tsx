@@ -16,17 +16,24 @@ export default function DashboardLayout({
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    console.log("Dashboard: Efeito isClient executado");
     setIsClient(true);
   }, []);
 
   useEffect(() => {
+    console.log("Dashboard: Verificando autenticação", { user: user?.email, loading, isClient });
+    
     // Verifica se o usuário está autenticado
     if (isClient && !loading && !user) {
+      console.log("Dashboard: Usuário não autenticado, redirecionando para login");
       router.push('/login');
+    } else if (isClient && !loading && user) {
+      console.log("Dashboard: Usuário autenticado, permitindo acesso");
     }
   }, [user, loading, isClient, router]);
 
   if (loading || !isClient) {
+    console.log("Dashboard: Exibindo loader", { loading, isClient });
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
@@ -36,9 +43,11 @@ export default function DashboardLayout({
 
   // Se o usuário não estiver autenticado, não renderize o layout
   if (!user) {
+    console.log("Dashboard: Usuário não autenticado, retornando null");
     return null;
   }
 
+  console.log("Dashboard: Renderizando layout completo para", user?.email);
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       <DashboardSidebar />

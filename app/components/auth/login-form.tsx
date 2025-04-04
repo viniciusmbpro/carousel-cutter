@@ -12,27 +12,37 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [loginSuccess, setLoginSuccess] = useState(false);
   
   const { user, login } = useAuth();
   const router = useRouter();
 
-  // Redirecionar após login bem-sucedido
+  // Log para depuração
   useEffect(() => {
-    if (user && loginSuccess) {
-      router.push('/dashboard');
+    console.log("Login: Estado atual:", { user: user?.email });
+    
+    if (user) {
+      console.log("Login: Usuário autenticado, redirecionando para dashboard");
+      // Usando replace em vez de push para garantir que a navegação ocorra
+      setTimeout(() => {
+        router.replace('/dashboard');
+      }, 100);
     }
-  }, [user, loginSuccess, router]);
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
+    console.log("Login: Tentando login com:", email);
 
     try {
+      console.log("Login: Chamando função login...");
       await login(email, password);
-      setLoginSuccess(true);
+      console.log("Login: Login bem-sucedido, aguardando atualização do estado");
+      
+      // Não fazemos redirecionamento aqui, aguardamos o efeito detectar o usuário
     } catch (err: any) {
+      console.error("Login: Erro no login:", err);
       let errorMessage = 'Falha ao fazer login. Tente novamente.';
       
       // Tratando erros específicos do Firebase
@@ -46,6 +56,12 @@ export default function LoginForm() {
     } finally {
       setIsLoading(false);
     }
+  };
+  
+  // Função para redirecionamento manual
+  const handleManualRedirect = () => {
+    console.log("Redirecionando manualmente para o dashboard");
+    window.location.href = "/dashboard";
   };
 
   return (
@@ -112,6 +128,21 @@ export default function LoginForm() {
           >
             Entrar
           </Button>
+          
+          {user && (
+            <div>
+              <div className="mt-4 p-3 rounded bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-sm">
+                Login realizado! Usuário: {user.email}
+              </div>
+              <button 
+                onClick={handleManualRedirect}
+                className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                type="button"
+              >
+                Ir para o Dashboard Manualmente
+              </button>
+            </div>
+          )}
         </form>
         
         <div className="mt-6 text-center">
