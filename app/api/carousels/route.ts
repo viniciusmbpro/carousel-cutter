@@ -51,6 +51,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Verificar quantos carrosséis o usuário já criou (limite do plano gratuito)
+    const carouselsRef = collection(db, 'carousels');
+    const q = query(carouselsRef, where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+    
+    // No plano gratuito, o usuário pode criar até 3 carrosséis
+    if (snapshot.size >= 3) {
+      return NextResponse.json(
+        { 
+          error: 'Limite de carrosséis do plano gratuito atingido', 
+          message: 'Você atingiu o limite de 3 carrosséis do plano gratuito. Considere fazer upgrade para um plano premium.'
+        },
+        { status: 403 }
+      );
+    }
+
     // Criar novo carrossel
     const carousel = {
       id: uuidv4(),
@@ -64,7 +80,6 @@ export async function POST(request: NextRequest) {
     };
 
     // Salvar no Firestore
-    const carouselsRef = collection(db, 'carousels');
     const docRef = await addDoc(carouselsRef, carousel);
 
     // Retornar dados salvos

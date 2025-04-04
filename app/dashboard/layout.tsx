@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/lib/context/AuthContext';
-import DashboardSidebar from '@/app/components/layout/dashboard-sidebar';
 import DashboardHeader from '@/app/components/layout/dashboard-header';
+import DashboardSidebar from '@/app/components/layout/dashboard-sidebar';
 
 export default function DashboardLayout({
   children,
@@ -13,37 +13,43 @@ export default function DashboardLayout({
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Verificar se o usuário está autenticado
-    if (!loading && !user) {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    // Verifica se o usuário está autenticado
+    if (isClient && !loading && !user) {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, loading, isClient, router]);
 
-  // Mostrar um carregamento enquanto verifica a autenticação
-  if (loading) {
+  if (loading || !isClient) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
 
-  // Se não estiver autenticado, não renderiza nada (o redirecionamento acontecerá no useEffect)
+  // Se o usuário não estiver autenticado, não renderize o layout
   if (!user) {
     return null;
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-slate-900">
-      <DashboardHeader />
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+      <DashboardSidebar />
       
-      <div className="flex flex-1">
-        <DashboardSidebar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <DashboardHeader />
         
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
-          {children}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+          <div className="container mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>
