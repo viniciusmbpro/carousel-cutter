@@ -19,7 +19,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signup: (email: string, password: string, name: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<UserCredential>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   getRedirectResult: () => Promise<User | null>;
@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string): Promise<UserCredential> => {
+  const login = async (email: string, password: string): Promise<void> => {
     try {
       console.log("AuthContext: Tentando login com:", email);
       const result = await signInWithEmailAndPassword(auth, email, password);
@@ -114,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         displayName: result.user.displayName
       }));
       
-      return result;
+      // Não retornamos o UserCredential
     } catch (error) {
       console.error('AuthContext: Erro ao fazer login:', error);
       throw error;
