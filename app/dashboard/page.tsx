@@ -94,7 +94,7 @@ export default function DashboardPage() {
             </p>
             <div className="mt-4">
               <Link href="/dashboard/editor">
-                <Button variant="success" className="w-full md:w-auto">
+                <Button variant="primary" className="w-full md:w-auto bg-green-600 hover:bg-green-700">
                   Experimentar Agora
                 </Button>
               </Link>

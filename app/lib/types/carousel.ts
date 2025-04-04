@@ -1,8 +1,15 @@
 export interface Slide {
   id: string;
-  text: string;
+  text?: string;
   imageUrl?: string;
+  caption?: string;
   order: number;
+  croppedArea?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
 }
 
 export interface Carousel {
@@ -14,6 +21,8 @@ export interface Carousel {
   createdAt: string | Date;
   updatedAt: string | Date;
   isPublished: boolean;
-  status: 'draft' | 'published';
+  status?: 'draft' | 'published';
   tags?: string[];
+  type?: 'text-carousel' | 'image-carousel';
+  aspectRatio?: 'square' | 'portrait' | 'landscape' | 'story';
 } 
