@@ -207,23 +207,53 @@ export default function DashboardPage() {
             {carousels.slice(0, 3).map((carousel) => (
               <div
                 key={carousel.id}
-                className="card border border-gray-200 dark:border-gray-700 hover:border-primary/60 transition-colors"
+                className="card border border-gray-200 dark:border-gray-700 hover:border-primary/60 transition-colors overflow-hidden"
               >
-                <h3 className="font-medium text-gray-900 dark:text-white mb-2">{carousel.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-                  {carousel.description || 'Sem descrição'}
-                </p>
-                <div className="text-xs mb-3 inline-block px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                  {carousel.type === 'image-carousel' ? 'Carrossel de Imagens' : 'Carrossel de IA'}
-                </div>
+                {/* Preview Image */}
+                {carousel.type === 'image-carousel' && carousel.slides && carousel.slides.length > 0 && carousel.slides[0].imageUrl ? (
+                  <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 mb-3 overflow-hidden">
+                    <img 
+                      src={carousel.slides[0].imageUrl} 
+                      alt={carousel.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                      {carousel.slides.length} {carousel.slides.length === 1 ? 'slide' : 'slides'}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center aspect-video bg-gray-100 dark:bg-gray-800 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </div>
+                )}
                 
-                <div className="flex justify-between items-center">
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    Criado em {new Date(carousel.createdAt).toLocaleDateString('pt-BR')}
+                <div className="p-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`inline-block px-2 py-1 text-xs rounded ${
+                      carousel.type === 'image-carousel' 
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+                        : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400'
+                    }`}>
+                      {carousel.type === 'image-carousel' ? 'Imagens' : 'IA'}
+                    </span>
+                    
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {new Date(carousel.createdAt).toLocaleDateString('pt-BR')}
+                    </div>
                   </div>
                   
-                  <Link href={`/dashboard/carousels/${carousel.id}`}>
-                    <Button variant="outline" size="sm">
+                  <h3 className="font-medium text-gray-900 dark:text-white mb-1 line-clamp-1">{carousel.title}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                    {carousel.description || 'Sem descrição'}
+                  </p>
+                  
+                  <Link href={`/dashboard/carousels/${carousel.id}`} className="w-full">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
                       Editar
                     </Button>
                   </Link>
@@ -234,7 +264,12 @@ export default function DashboardPage() {
             {carousels.length > 3 && (
               <div className="col-span-full mt-4 text-center">
                 <Link href="/dashboard/carousels">
-                  <Button variant="outline">Ver todos os carrosséis</Button>
+                  <Button variant="outline">
+                    Ver todos os {carousels.length} carrosséis
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </Button>
                 </Link>
               </div>
             )}

@@ -29,7 +29,7 @@
     "@types/uuid": "^10.0.0",
     "@vercel/analytics": "^1.2.2",
     "clsx": "^2.0.0",
-    "firebase": "^10.8.0",
+    "firebase": "^10.6.0",
     "jszip": "^3.10.1",
     "next": "14.1.0",
     "react": "^18",
@@ -41,12 +41,21 @@
     "stripe": "^14.18.0",
     "tailwind-merge": "^2.2.0",
     "typescript": "^5.3.3",
+    "undici": "^5.27.2",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@swc/core": "^1.11.16",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.0"
-  }
+  },
+  "browserslist": [
+    "chrome 64",
+    "edge 79",
+    "firefox 67",
+    "opera 51",
+    "safari 12"
+  ]
 }

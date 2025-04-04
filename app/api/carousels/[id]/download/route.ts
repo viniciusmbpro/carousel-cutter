@@ -6,6 +6,23 @@ import JSZip from 'jszip';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import https from 'https';
 
+// Definindo interface para o objeto carousel
+interface CarouselData {
+  id: string;
+  title: string;
+  description?: string;
+  slides: {
+    id: string;
+    order: number;
+    imageUrl?: string;
+    text?: string;
+    caption?: string;
+  }[];
+  createdAt: string;
+  type?: string;
+  aspectRatio?: string;
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -24,7 +41,7 @@ export async function GET(
       );
     }
 
-    const carousel = { id: carouselSnap.id, ...carouselSnap.data() };
+    const carousel = { id: carouselSnap.id, ...carouselSnap.data() } as CarouselData;
     
     // Verificar se é um carrossel de imagens
     if (carousel.type !== 'image-carousel' || !carousel.slides || carousel.slides.length === 0) {
@@ -60,8 +77,8 @@ export async function GET(
 
     // Adicionar cada imagem ao ZIP
     const downloadPromises = carousel.slides
-      .sort((a: any, b: any) => a.order - b.order)
-      .map((slide: any, index: number) => {
+      .sort((a, b) => a.order - b.order)
+      .map((slide, index) => {
         if (!slide.imageUrl) return Promise.resolve();
         
         const fileName = `slide_${index + 1}.jpg`;

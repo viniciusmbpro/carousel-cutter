@@ -190,7 +190,18 @@ export default function CarouselEditPage({ params }: PageProps) {
             </svg>
             Voltar para carrosséis
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Editar Carrossel</h1>
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Editar Carrossel</h1>
+            {carousel.type && (
+              <span className={`ml-3 text-xs font-medium px-2.5 py-1 rounded ${
+                carousel.type === 'image-carousel' 
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+                  : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400'
+              }`}>
+                {carousel.type === 'image-carousel' ? 'Carrossel de Imagens' : 'Carrossel de IA'}
+              </span>
+            )}
+          </div>
         </div>
         
         <div className="flex items-center space-x-4">
@@ -244,73 +255,144 @@ export default function CarouselEditPage({ params }: PageProps) {
         </div>
       )}
       
-      <div className="card border border-gray-200 dark:border-gray-700 mb-8">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Informações do carrossel</h2>
-        
-        <div className="space-y-6">
-          <Input
-            label="Título do carrossel"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Digite um título para o carrossel"
-            required
-          />
-          
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-1">
-              Descrição (opcional)
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Digite uma descrição para o carrossel"
-              className="input w-full h-20 resize-none"
-            />
-          </div>
-          
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="isPublished"
-              checked={isPublished}
-              onChange={(e) => setIsPublished(e.target.checked)}
-              className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-            />
-            <label htmlFor="isPublished" className="ml-2 block text-gray-700 dark:text-gray-300">
-              Publicar carrossel (disponível publicamente)
-            </label>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="md:col-span-2">
+          <div className="card border border-gray-200 dark:border-gray-700 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Informações do carrossel</h2>
+            
+            <div className="space-y-6">
+              <Input
+                label="Título do carrossel"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Digite um título para o carrossel"
+                required
+              />
+              
+              <div>
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-1">
+                  Descrição (opcional)
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Digite uma descrição para o carrossel"
+                  className="input w-full h-20 resize-none"
+                />
+              </div>
+              
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="isPublished"
+                  checked={isPublished}
+                  onChange={(e) => setIsPublished(e.target.checked)}
+                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                />
+                <label htmlFor="isPublished" className="ml-2 block text-gray-700 dark:text-gray-300">
+                  Publicar carrossel (disponível publicamente)
+                </label>
+              </div>
 
-          {carousel.type === 'image-carousel' && (
-            <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300">
-              <p className="flex items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span>
-                  Este é um carrossel de imagens otimizado para o Instagram. Você pode baixar todas as imagens no formato correto clicando no botão "Baixar para Instagram".
-                </span>
-              </p>
+              {carousel.type === 'image-carousel' && (
+                <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300">
+                  <div className="flex items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <div>
+                      <p className="font-medium mb-1">Carrossel de imagens otimizado para Instagram</p>
+                      <p className="text-sm">
+                        Você pode baixar todas as imagens no formato correto clicando no botão "Baixar para Instagram".
+                      </p>
+                      {carousel.aspectRatio && (
+                        <p className="text-sm mt-2">
+                          <span className="font-medium">Formato:</span> {
+                            carousel.aspectRatio === 'square' ? 'Quadrado (1:1)' :
+                            carousel.aspectRatio === 'portrait' ? 'Retrato (4:5)' :
+                            carousel.aspectRatio === 'landscape' ? 'Paisagem (16:9)' :
+                            carousel.aspectRatio === 'story' ? 'Story (9:16)' :
+                            carousel.aspectRatio
+                          }
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {isPublished && (
+                <div className="p-4 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
+                  <p className="flex items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                    <span>
+                      Seu carrossel está publicado e pode ser acessado por qualquer pessoa com o link:
+                      <br />
+                      <a 
+                        href={`${window.location.origin}/carousels/${id}`}
+                        target="_blank"
+                        className="text-blue-600 dark:text-blue-400 hover:underline break-all"
+                      >
+                        {`${window.location.origin}/carousels/${id}`}
+                      </a>
+                    </span>
+                  </p>
+                </div>
+              )}
             </div>
-          )}
-          
-          {isPublished && (
-            <div className="p-4 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
-              <p className="flex items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-                <span>
-                  Seu carrossel está publicado e pode ser acessado por qualquer pessoa com o link:
-                  <br />
-                  <a 
-                    href={`${window.location.origin}/carousels/${id}`}
-                    target="_blank"
-                    className="text-blue-600 dark:text-blue-400 hover:underline break-all"
-                  >
-                    {`${window.location.origin}/carousels/${id}`}
-                  </a>
+          </div>
+        </div>
+        
+        <div className="md:col-span-1">
+          <div className="card border border-gray-200 dark:border-gray-700 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Detalhes</h2>
+            
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-gray-600 dark:text-gray-400">Tipo</span>
+                <span className="font-medium text-gray-900 dark:text-white">{carousel.type === 'image-carousel' ? 'Carrossel de Imagens' : 'Carrossel de IA'}</span>
+              </div>
+              
+              <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-gray-600 dark:text-gray-400">Data de criação</span>
+                <span className="font-medium text-gray-900 dark:text-white">{new Date(carousel.createdAt).toLocaleDateString('pt-BR')}</span>
+              </div>
+              
+              <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-gray-600 dark:text-gray-400">Última atualização</span>
+                <span className="font-medium text-gray-900 dark:text-white">{new Date(carousel.updatedAt).toLocaleDateString('pt-BR')}</span>
+              </div>
+              
+              <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-gray-600 dark:text-gray-400">Número de slides</span>
+                <span className="font-medium text-gray-900 dark:text-white">{slides.length}</span>
+              </div>
+              
+              <div className="flex justify-between py-2">
+                <span className="text-gray-600 dark:text-gray-400">Status</span>
+                <span className={`font-medium ${isPublished ? 'text-green-600 dark:text-green-400' : 'text-yellow-600 dark:text-yellow-400'}`}>
+                  {isPublished ? 'Publicado' : 'Rascunho'}
                 </span>
+              </div>
+            </div>
+          </div>
+          
+          {carousel.type === 'image-carousel' && slides.length > 0 && slides[0].imageUrl && (
+            <div className="card border border-gray-200 dark:border-gray-700 mb-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Prévia</h2>
+              
+              <div className="aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden mb-3">
+                <img
+                  src={slides[0].imageUrl}
+                  alt={title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              
+              <p className="text-center text-xs text-gray-500 dark:text-gray-400">
+                Visualização do primeiro slide
               </p>
             </div>
           )}
@@ -318,71 +400,98 @@ export default function CarouselEditPage({ params }: PageProps) {
       </div>
       
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Slides do carrossel</h2>
-      </div>
-      
-      <div className="space-y-4 mb-6">
-        {slides.map((slide) => (
-          <div key={slide.id} className="card border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center">
-                <div className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium mr-2">
-                  {slide.order}
-                </div>
-                <h3 className="font-medium text-gray-900 dark:text-white">Slide {slide.order}</h3>
-              </div>
-              
-              <button
-                onClick={() => handleRemoveSlide(slide.id)}
-                className="text-red-500 hover:text-red-700"
-                aria-label="Remover slide"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Slides do carrossel</h2>
+          <Button
+            variant="outline"
+            onClick={handleAddSlide}
+            className="flex items-center justify-center"
+            size="sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
+            Adicionar slide
+          </Button>
+        </div>
+        
+        {slides.length === 0 ? (
+          <div className="card border border-dashed border-gray-300 dark:border-gray-700 p-8 text-center">
+            <div className="mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
             </div>
-            
-            {carousel.type === 'image-carousel' && slide.imageUrl && (
-              <div className="mb-4 relative w-full h-40 bg-gray-100 dark:bg-gray-800 rounded overflow-hidden">
-                <img
-                  src={slide.imageUrl}
-                  alt={`Slide ${slide.order}`}
-                  className="w-full h-full object-contain"
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Nenhum slide adicionado</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
+              Adicione slides para começar a criar seu carrossel
+            </p>
+            <Button
+              variant="primary"
+              onClick={handleAddSlide}
+            >
+              Adicionar primeiro slide
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {slides.map((slide) => (
+              <div key={slide.id} className="card border border-gray-200 dark:border-gray-700 hover:border-primary/50 transition-all">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center">
+                    <div className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium mr-2">
+                      {slide.order}
+                    </div>
+                    <h3 className="font-medium text-gray-900 dark:text-white">Slide {slide.order}</h3>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => handleRemoveSlide(slide.id)}
+                      className="text-red-500 hover:text-red-700 p-1"
+                      aria-label="Remover slide"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                
+                {carousel.type === 'image-carousel' && slide.imageUrl && (
+                  <div className="mb-3 relative aspect-[4/3] bg-gray-100 dark:bg-gray-800 rounded overflow-hidden">
+                    <img
+                      src={slide.imageUrl}
+                      alt={`Slide ${slide.order}`}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                )}
+                
+                <textarea
+                  value={slide.text || ''}
+                  onChange={(e) => handleSlideChange(slide.id, e.target.value)}
+                  className="input w-full resize-none"
+                  style={{ height: carousel.type === 'image-carousel' ? '80px' : '120px' }}
+                  placeholder={`${carousel.type === 'image-carousel' ? 'Legenda' : 'Conteúdo'} do slide ${slide.order}...`}
                 />
               </div>
-            )}
-            
-            <textarea
-              value={slide.text || ''}
-              onChange={(e) => handleSlideChange(slide.id, e.target.value)}
-              className="input w-full h-32 resize-none"
-              placeholder={`Conteúdo do slide ${slide.order}...`}
-            />
+            ))}
           </div>
-        ))}
+        )}
       </div>
       
-      <div className="flex flex-col sm:flex-row gap-4 justify-between mb-8">
-        <Button
-          variant="outline"
-          onClick={handleAddSlide}
-          className="flex items-center justify-center"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-          </svg>
-          Adicionar slide
-        </Button>
-        
-        <Button
-          variant="primary"
-          onClick={handleSave}
-          isLoading={saving}
-        >
-          Salvar alterações
-        </Button>
-      </div>
+      {slides.length > 0 && (
+        <div className="flex justify-end mb-8">
+          <Button
+            variant="primary"
+            onClick={handleSave}
+            isLoading={saving}
+          >
+            Salvar alterações
+          </Button>
+        </div>
+      )}
     </div>
   );
 } 

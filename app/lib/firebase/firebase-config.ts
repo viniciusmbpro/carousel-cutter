@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
@@ -15,26 +15,34 @@ const firebaseConfig = {
   measurementId: "G-C6PK70CQ6J"
 };
 
-console.log("Inicializando Firebase...");
-// Initialize Firebase
-let app;
-if (getApps().length === 0) {
-  console.log("Criando nova instância do Firebase");
-  app = initializeApp(firebaseConfig);
+// Evitar inicialização múltipla no lado do cliente
+let firebaseApp;
+let firebaseAuth;
+let firebaseDb;
+let firebaseStorage;
+
+if (typeof window !== 'undefined') {
+  // Código do lado do cliente
+  if (!getApps().length) {
+    firebaseApp = initializeApp(firebaseConfig);
+  } else {
+    firebaseApp = getApps()[0];
+  }
+  
+  firebaseAuth = getAuth(firebaseApp);
+  firebaseDb = getFirestore(firebaseApp);
+  firebaseStorage = getStorage(firebaseApp);
 } else {
-  console.log("Usando instância existente do Firebase");
-  app = getApps()[0];
+  // Código do lado do servidor (SSR)
+  // Criamos uma nova instância a cada renderização no servidor
+  firebaseApp = initializeApp(firebaseConfig);
+  firebaseAuth = getAuth(firebaseApp);
+  firebaseDb = getFirestore(firebaseApp);
+  firebaseStorage = getStorage(firebaseApp);
 }
 
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-
-// Descomente para depuração local, se necessário
-// if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-//   connectAuthEmulator(auth, 'http://localhost:9099');
-// }
-
-console.log("Firebase inicializado com sucesso");
-
-export { app, auth, db, storage }; 
+// Exportamos as variáveis em vez das funções diretas
+export const app = firebaseApp;
+export const auth = firebaseAuth;
+export const db = firebaseDb;
+export const storage = firebaseStorage; 
