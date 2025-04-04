@@ -25,6 +25,7 @@ export default function CarouselsPage() {
         }
         
         const data = await response.json();
+        console.log('Carrosséis carregados:', data);
         setCarousels(data);
       } catch (error) {
         console.error('Erro ao carregar carrosséis:', error);

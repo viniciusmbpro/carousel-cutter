@@ -19,22 +19,35 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
     
+    console.log('Buscando carrossel com ID:', id);
+    
     // Buscar documento no Firestore
     const carouselRef = doc(db, 'carousels', id);
     const carouselDoc = await getDoc(carouselRef);
     
+    console.log('Documento existe?', carouselDoc.exists());
+    
     if (!carouselDoc.exists()) {
+      console.log('Carrossel não encontrado para o ID:', id);
       return NextResponse.json(
         { error: 'Carrossel não encontrado' },
         { status: 404 }
       );
     }
     
-    // Retornar dados do carrossel
-    return NextResponse.json({
+    const data = {
       id: carouselDoc.id,
       ...carouselDoc.data()
+    };
+    
+    console.log('Dados do carrossel recuperados:', {
+      id: data.id,
+      title: data.title,
+      slidesCount: data.slides?.length || 0
     });
+    
+    // Retornar dados do carrossel
+    return NextResponse.json(data);
   } catch (error) {
     console.error('Erro ao buscar carrossel:', error);
     return NextResponse.json(

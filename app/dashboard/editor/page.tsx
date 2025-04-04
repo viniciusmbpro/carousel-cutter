@@ -346,6 +346,10 @@ export default function ImageEditorPage() {
       }
       
       const data = await response.json();
+      console.log('Carrossel salvo com sucesso:', data);
+      
+      // Redirecionar para a página de detalhes do carrossel
+      // usando o ID gerado pelo Firestore
       router.push(`/dashboard/carousels/${data.id}`);
     } catch (error) {
       console.error('Erro ao salvar carrossel:', error);

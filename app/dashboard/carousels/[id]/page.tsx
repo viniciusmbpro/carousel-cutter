@@ -37,13 +37,16 @@ export default function CarouselEditPage({ params }: PageProps) {
       
       try {
         setLoading(true);
+        console.log('Buscando carrossel com ID:', id);
         const response = await fetch(`/api/carousels/${id}`);
         
         if (!response.ok) {
+          console.error('Resposta não-OK ao buscar carrossel:', response.status, response.statusText);
           throw new Error('Falha ao carregar carrossel');
         }
         
         const data = await response.json();
+        console.log('Carrossel carregado:', data);
         
         setCarousel(data);
         setTitle(data.title);

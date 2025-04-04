@@ -45,7 +45,7 @@ Fluxo principal de geração do carrossel
 
 Recebe entrada do usuário (tema, texto, propósito do post, etc.).
 
-Usa API de IA para gerar o texto de cada “slide” do carrossel e possíveis sugestões de design (layout, cores).
+Usa API de IA para gerar o texto de cada "slide" do carrossel e possíveis sugestões de design (layout, cores).
 
 Retorna ao front-end para o usuário revisar/editar.
 
@@ -56,7 +56,7 @@ Tela de Login / Cadastro
 
 Autenticação via email/senha (Firebase Auth).
 
-Botão “Esqueci minha senha” (opcional, mas recomendável).
+Botão "Esqueci minha senha" (opcional, mas recomendável).
 
 Possibilidade de Social Login (Google, GitHub etc.) se quiser simplificar UX (também via Firebase Auth).
 
@@ -80,7 +80,7 @@ Tela de Criação/Edição de Carrossel
 
 Campo para o usuário informar o tema ou assunto do post.
 
-Botão para “Gerar Carrossel” – que chama a API de IA no back-end.
+Botão para "Gerar Carrossel" – que chama a API de IA no back-end.
 
 Ao receber a resposta, exibe cada slide em uma interface básica, permitindo ao usuário:
 
@@ -88,7 +88,7 @@ Editar texto
 
 (Opcional) Escolher entre alguns layouts ou templates prontos
 
-Botão para “Salvar Carrossel” ou “Exportar”.
+Botão para "Salvar Carrossel" ou "Exportar".
 
 Tela de Perfil do Usuário
 
@@ -155,9 +155,9 @@ email (string)
 
 stripeCustomerId (string) - armazenar para relacionar com Stripe.
 
-subscriptionStatus (string) - “active”, “cancelled”, “past_due”, etc.
+subscriptionStatus (string) - "active", "cancelled", "past_due", etc.
 
-plan (string) - “weekly” ou “monthly”.
+plan (string) - "weekly" ou "monthly".
 
 Coleção carousels
 id (gerado automaticamente)
@@ -235,4 +235,24 @@ Segurança: Não esquecer de proteger as rotas de criação/edição de carross�
 Gerenciamento de Estados: Se quiser simplicidade no front-end, usar algo como React Hooks. Se o projeto crescer, pode-se considerar Redux ou outra lib de gestão de estado.
 
 Opções de IA: Para um MVP, usar OpenAI (GPT) costuma ser o mais rápido. Caso não queira dependência externa, seria preciso hospedar um modelo próprio, mas isso complica o MVP.
+
+## Correção de Bugs Recentes
+
+### Problema com IDs de Carrosséis
+
+Foi corrigido um problema na geração e manipulação de IDs dos carrosséis:
+
+1. **Problema original**: Os carrosséis eram salvos no Firebase Storage corretamente, mas não apareciam na lista ou não podiam ser editados.
+
+2. **Causa**: Na API de criação de carrosséis (`/api/carousels/route.ts`), estava sendo gerado um UUID interno para o carrossel, mas depois o Firestore criava seu próprio ID. Isso causava uma inconsistência entre o ID interno e o ID usado nas consultas.
+
+3. **Solução**: Removemos a geração do UUID interno e agora usamos exclusivamente o ID gerado pelo Firestore. Isso garante consistência entre o upload de imagens, a criação de carrosséis e a recuperação dos mesmos.
+
+4. **Como testar**: 
+   - Crie um novo carrossel na página de editor
+   - Após salvar, você deve ser redirecionado para a página de detalhes do carrossel
+   - Volte para a listagem de carrosséis e verifique se o novo carrossel aparece
+   - Tente editar o carrossel clicando no botão "Editar"
+
+5. **Logs adicionados**: Foram adicionados logs em vários pontos do código para facilitar o diagnóstico de problemas relacionados ao gerenciamento de IDs.
 

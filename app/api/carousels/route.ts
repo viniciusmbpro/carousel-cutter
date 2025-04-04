@@ -77,7 +77,6 @@ export async function POST(request: NextRequest) {
 
     // Criar novo carrossel
     const carousel = {
-      id: uuidv4(),
       userId,
       title,
       description: description || '',
