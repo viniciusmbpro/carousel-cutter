@@ -10,7 +10,8 @@ import {
   sendPasswordResetEmail,
   updateProfile,
   setPersistence,
-  browserLocalPersistence
+  browserLocalPersistence,
+  UserCredential
 } from 'firebase/auth';
 import { auth } from '../firebase/firebase-config';
 
@@ -18,7 +19,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signup: (email: string, password: string, name: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   getRedirectResult: () => Promise<User | null>;
@@ -97,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<UserCredential> => {
     try {
       console.log("AuthContext: Tentando login com:", email);
       const result = await signInWithEmailAndPassword(auth, email, password);
