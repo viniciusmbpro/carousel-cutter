@@ -15,12 +15,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Buscar carrosséis do usuário
+    // Buscar carrosséis do usuário - sem orderBy para evitar erro de índice
     const carouselsRef = collection(db, 'carousels');
+    
+    // Remover temporariamente o orderBy para funcionar sem índice
     const q = query(
       carouselsRef,
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', userId)
+      // orderBy removido temporariamente
     );
 
     const querySnapshot = await getDocs(q);
@@ -28,6 +30,12 @@ export async function GET(request: NextRequest) {
       id: doc.id,
       ...doc.data()
     }));
+
+    // Ordenar no cliente
+    carousels.sort((a: any, b: any) => {
+      // Ordenar por data decrescente (mais recente primeiro)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
 
     return NextResponse.json(carousels);
   } catch (error) {
